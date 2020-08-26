@@ -1,0 +1,22 @@
+{
+    "name": "projeto/php-classes",
+    "minimum-stability": "dev",
+    "type": "library",
+    "description": "Classes PHP",
+    "homepage": "https://github.com/projeto/php-classes",
+    "authors": [
+        {
+            "name": "Daniel Ribeiro Araujo",
+            "email": "danielribeiro.a@outlook.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "rain/raintpl":"3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src"
+        }
+    }
+}
