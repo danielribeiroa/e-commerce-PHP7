@@ -1,3 +1,3 @@
-#Ecommerce PHP 7
+# Ecommerce PHP 7
 
-##Em desenvolvimento
+## Em desenvolvimento...
