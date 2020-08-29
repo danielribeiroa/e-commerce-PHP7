@@ -1,6 +1,6 @@
 <?php 
 
-namespace Hcode\DB;
+namespace Projeto\DB;
 
 class Sql {
 
@@ -15,7 +15,8 @@ class Sql {
 	{
 
 		$this->conn = new \PDO(
-			"mysql:dbname=".Sql::DBNAME.";host=".Sql::HOSTNAME, 
+			"mysql:dbname=".Sql::DBNAME.";host=".
+			Sql::HOSTNAME, 
 			Sql::USERNAME,
 			Sql::PASSWORD
 		);

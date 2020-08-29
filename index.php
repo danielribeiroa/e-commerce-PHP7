@@ -1,11 +1,11 @@
 <?php 
-
+session_start();
 require_once("vendor/autoload.php");
 
 use \Projeto\Page;
 use \Projeto\PageAdmin;
 use \Slim\Slim;
-
+use \Projeto\Model\User;
 $app = new Slim();
 
 $app->config('debug', true);
@@ -15,12 +15,27 @@ $app->get('/', function() {
     $page->setTpl("index");
     
 });
-$app->get('/admin', function() {
+
+$app->get('/admin', function() { 
+    User::verifyLogin();
     $page = new PageAdmin();
-    $page->setTpl("index");
-    
+    $page->setTpl("index");    
 });
 
+$app->get('/admin/login', function(){
+   $page = new PageAdmin([
+        "header"=>false,
+       "footer"=>false
+   ]);
+   $page->setTpl("login");
+});
+
+$app->post('/admin/login', function(){
+   
+   User::login($_POST["login"], $_POST["password"]);
+   header("Location: /admin");
+   exit;
+});
 
 $app->run();
 
