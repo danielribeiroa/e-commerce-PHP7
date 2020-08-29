@@ -27,8 +27,8 @@ class User extends Model{
       if(password_verify($password, $data["despassword"]) === true ){
         $user = new User;
         $user->setData($data);
-        return $user;
         $_SESSION[User::SESSION] = $user->getValues();
+        return $user;
         exit;
         
       }else{
@@ -52,5 +52,9 @@ class User extends Model{
             header("Location: /admin/login");
             exit;
         }
+    }
+    public static function logout()
+    {
+        unset($_SESSION[User::SESSION]);
     }
 }
