@@ -2,6 +2,8 @@
 
 namespace Projeto\DB;
 
+use Exception;
+
 class Sql {
 
 	const HOSTNAME = "127.0.0.1";
@@ -13,20 +15,20 @@ class Sql {
 
 	public function __construct()
 	{
-
-		$this->conn = new \PDO(
-			"mysql:dbname=".Sql::DBNAME.";host=".
-			Sql::HOSTNAME, 
-			Sql::USERNAME,
-			Sql::PASSWORD
-		);
-
+			$this->conn = new \PDO
+			(
+				"mysql:dbname=".Sql::DBNAME.";host=".
+				Sql::HOSTNAME, 
+				Sql::USERNAME,
+				Sql::PASSWORD
+			);	
 	}
 
 	private function setParams($statement, $parameters = array())
 	{
 
-		foreach ($parameters as $key => $value) {
+		foreach ($parameters as $key => $value)
+		{
 			
 			$this->bindParam($statement, $key, $value);
 

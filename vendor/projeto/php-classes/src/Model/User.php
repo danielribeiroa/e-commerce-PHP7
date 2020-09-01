@@ -57,4 +57,89 @@ class User extends Model{
     {
         unset($_SESSION[User::SESSION]);
     }
+    public static function listAll()
+    {
+        $sql = new Sql;
+        return $sql->select("SELECT * "
+                            . "FROM tb_users "
+                            . "INNER JOIN tb_persons "
+                            . "ON tb_persons.idperson = tb_users.idperson "
+                            . "ORDER BY tb_persons.desperson");     
+    }
+    public function get($iduser)
+    {
+    
+        $sql = new Sql();
+        
+        $results = $sql->select("SELECT * 
+                                FROM tb_users a 
+                                INNER JOIN tb_persons b 
+                                USING(idperson) 
+                                WHERE a.iduser = :iduser", array(
+                                                            ":iduser"=>$iduser
+                                                           ));
+        $this->setData($results[0]);
+    
+    }
+    public function saveData()
+    {
+        /*
+        pdesperson VARCHAR(64),
+        pdeslogin VARCHAR(64),
+        pdespassword VARCHAR(256),
+        pdesemail VARCHAR(128),
+        pnrphone BIGINT,
+        pinadmin TINYINT)
+        */
+        $sql = new Sql();
+        //procedure call
+        $results = $sql->select("CALL  db_ecommerce.sp_users_save(:desperson, 
+                                                                :deslogin, 
+                                                                :despassword, 
+                                                                :desemail, 
+                                                                :nrphone, 
+                                                                :inadmin)",
+                                                                array
+                                                                (
+                                                                    ":desperson"=>$this->getdesperson(),
+                                                                    ":deslogin"=>$this->getdeslogin(),
+                                                                    ":despassword"=>password_hash($this->getdespassword(), PASSWORD_DEFAULT,['cont'=>12]),
+                                                                    ":desemail"=>$this->getdesemail(),
+                                                                    ":nrphone"=>$this->getnrphone(),
+                                                                    ":inadmin"=>$this->getinadmin()
+                                                                ));
+        $this->setData($results[0]);
+    }
+    public function update()
+    {
+        $sql = new Sql();
+        $results = $sql->select("CALL  db_ecommerce.sp_usersupdate_save(:iduser, 
+                                                                        :desperson, 
+                                                                        :deslogin, 
+                                                                        :despassword, 
+                                                                        :desemail, 
+                                                                        :nrphone, 
+                                                                        :inadmin
+                                                                        )",
+                                                                        array
+                                                                        (
+                                                                            ":iduser"=>$this->getiduser(),
+                                                                            ":desperson"=>$this->getdesperson(),
+                                                                            ":deslogin"=>$this->getdeslogin(),
+                                                                            ":despassword"=>password_hash($this->getdespassword(), PASSWORD_DEFAULT,['cont'=>12]),
+                                                                            ":desemail"=>$this->getdesemail(),
+                                                                            ":nrphone"=>$this->getnrphone(),
+                                                                            ":inadmin"=>$this->getinadmin()
+                                                                        ));
+        $this->setData($results[0]);
+    }
+    public function delete()
+    {
+        $sql = new Sql();
+        $sql->query("CALL  db_ecommerce.sp_users_delete(:iduser)", array
+                                                                (
+                                                                    ":iduser"=>$this->getiduser()
+                                                                ));
+    }
+    
 }
