@@ -20,12 +20,12 @@ class User extends Model{
           ":LOGIN"=>$login
       ));
       //Checking if something was found
-      
+
       if(count($res) === 0){
           throw new \Exception("Invalid login or password. Check your data. ");
       }
       $data = $res[0];
-      
+
       //Checking user password
       //this function returns true or false
       if(password_verify($password, $data["despassword"]) === true ){
@@ -34,11 +34,11 @@ class User extends Model{
         $_SESSION[User::SESSION] = $user->getValues();
         return $user;
         exit;
-        
+
       }else{
           throw new \Exception("Invalid login or password. Check your data. ");
-      }     
-          
+      }
+
     }
     public static function verifyLogin($inadmin = true)
     {
@@ -68,22 +68,22 @@ class User extends Model{
                             . "FROM tb_users "
                             . "INNER JOIN tb_persons "
                             . "ON tb_persons.idperson = tb_users.idperson "
-                            . "ORDER BY tb_persons.desperson");     
+                            . "ORDER BY tb_persons.desperson");
     }
     public function get($iduser)
     {
-    
+
         $sql = new Sql();
-        
-        $results = $sql->select("SELECT * 
-                                FROM tb_users a 
-                                INNER JOIN tb_persons b 
-                                USING(idperson) 
+
+        $results = $sql->select("SELECT *
+                                FROM tb_users a
+                                INNER JOIN tb_persons b
+                                USING(idperson)
                                 WHERE a.iduser = :iduser", array(
                                                             ":iduser"=>$iduser
                                                            ));
         $this->setData($results[0]);
-    
+
     }
     public function saveData()
     {
@@ -97,11 +97,11 @@ class User extends Model{
         */
         $sql = new Sql();
         //procedure call
-        $results = $sql->select("CALL  db_ecommerce.sp_users_save(:desperson, 
-                                                                :deslogin, 
-                                                                :despassword, 
-                                                                :desemail, 
-                                                                :nrphone, 
+        $results = $sql->select("CALL  db_ecommerce.sp_users_save(:desperson,
+                                                                :deslogin,
+                                                                :despassword,
+                                                                :desemail,
+                                                                :nrphone,
                                                                 :inadmin)",
                                                                 array
                                                                 (
@@ -117,12 +117,12 @@ class User extends Model{
     public function update()
     {
         $sql = new Sql();
-        $results = $sql->select("CALL  db_ecommerce.sp_usersupdate_save(:iduser, 
-                                                                        :desperson, 
-                                                                        :deslogin, 
-                                                                        :despassword, 
-                                                                        :desemail, 
-                                                                        :nrphone, 
+        $results = $sql->select("CALL  db_ecommerce.sp_usersupdate_save(:iduser,
+                                                                        :desperson,
+                                                                        :deslogin,
+                                                                        :despassword,
+                                                                        :desemail,
+                                                                        :nrphone,
                                                                         :inadmin
                                                                         )",
                                                                         array
@@ -168,8 +168,8 @@ class User extends Model{
 			$data = $results[0];
 
 			$results2 = $sql->select("CALL db_ecommerce.sp_userspasswordsrecoveries_create(
-                                                                                    :iduser, 
-                                                                                    :desip)", 
+                                                                                    :iduser,
+                                                                                    :desip)",
                                                                                     array(":iduser"=>$data['iduser'],
                                                                                         ":desip"=>$_SERVER['REMOTE_ADDR']));
 			if (count($results2) === 0)
@@ -194,20 +194,20 @@ class User extends Model{
 				} else {
 
 					$link = "http://www.projetoecommerce.com.br/forgot/reset?code=$code";
-					
-				}				
 
-                $mailer = new Mailer($data['desemail'], 
-                                            $data['desperson'], 
-                                            "Redefinir senha", 
+				}
+
+                $mailer = new Mailer($data['desemail'],
+                                            $data['desperson'],
+                                            "Redefinir senha",
                                             "forgot", array("name"=>$data['desperson'],
-					                                        "link"=>$link));				
+					                                        "link"=>$link));
 				$mailer->send();
 				return $link;
 			}
 		}
     }
-    
+
 	public static function validForgotDecrypt($code)
 	{
 
@@ -248,10 +248,10 @@ class User extends Model{
     }
     public function setPassword($password)
     {
-        $sql = new Sql();
-		$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
-			":password"=>$password,
-			":iduser"=>$this->getiduser()
-	    ));
+      $sql = new Sql();
+  		$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+  			":password"=>$password,
+  			":iduser"=>$this->getiduser()
+  	    ));
     }
 }

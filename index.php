@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once("vendor/autoload.php");
 
@@ -6,6 +6,7 @@ use \Projeto\Page;
 use \Projeto\PageAdmin;
 use \Slim\Slim;
 use \Projeto\Model\User;
+use \Projeto\Model\Category;
 
 $app = new Slim();
 
@@ -16,20 +17,21 @@ $app->get('/', function()
     $page = new Page();
 
     $page->setTpl("index");
-    
+
 });
 
 $app->get('/admin', function()
- { 
+ {
     User::verifyLogin();
 
     $page = new PageAdmin();
 
-    $page->setTpl("index");  
+    $page->setTpl("index");
 
 });
 
 $app->get('/admin/login', function(){
+   User::verifyLogin();
    $page = new PageAdmin([
         "header"=>false,
        "footer"=>false
@@ -40,7 +42,7 @@ $app->get('/admin/login', function(){
 });
 
 $app->post('/admin/login', function(){
-   
+   User::verifyLogin();
    User::login($_POST["login"], $_POST["password"]);
 
    header("Location: /admin");
@@ -50,7 +52,7 @@ $app->post('/admin/login', function(){
 });
 
 $app->get('/admin/logout', function(){
-
+    User::verifyLogin();
     User::logout();
 
     header("Location: /admin/login");
@@ -95,23 +97,23 @@ $app->get("/admin/users/:iduser/delete", function($iduser){
 });
 
 $app->get('/admin/users/:iduser', function($iduser){
- 
+
    User::verifyLogin();
- 
+
    $user = new User();
- 
+
    $user->get((int)$iduser);
- 
+
    $page = new PageAdmin();
- 
+
    $page ->setTpl("users-update", array(
         "user"=>$user->getValues()
     ));
- 
+
 });
 
 $app->post("/admin/users/create", function(){
-   
+
    User::verifyLogin();
    $user = new User();
    $_POST["inadmin"] = (isset($_POST["inadmin"])) ? 1 : 0;
@@ -131,14 +133,14 @@ $app->post("/admin/users/:iduser", function($iduser){
    $user->get((int)$iduser);
    $user->setData($_POST);
    $user->update();
-   
+
    header("Location: /admin/users");
    exit;
 
 });
 
 $app->get("/admin/forgot", function(){
-
+   User::verifyLogin();
    $page = new PageAdmin([
       "header"=>false,
      "footer"=>false
@@ -149,13 +151,14 @@ $app->get("/admin/forgot", function(){
 });
 
 $app->post("/admin/forgot", function(){
-   
+   User::verifyLogin();
    $user = User::getForgot($_POST["email"]);
    header("Location: /admin/forgot/sent");
    exit;
 });
 
 $app->get("/admin/forgot/sent", function(){
+   User::verifyLogin();
    $page = new PageAdmin([
       "header"=>false,
      "footer"=>false
@@ -166,7 +169,7 @@ $app->get("/admin/forgot/sent", function(){
 });
 
 $app->get("/admin/forgot/reset", function(){
-   
+   User::verifyLogin();
    $user = User::validForgotDecrypt($_GET["code"]);
 
    $page = new PageAdmin([
@@ -182,7 +185,7 @@ $app->get("/admin/forgot/reset", function(){
 });
 
 $app->post("/admin/forgot/reset", function (){
-
+   User::verifyLogin();
    $forgot = User::validForgotDecrypt($_POST["code"]);
 
    User::setForgotUsed($forgot["idrecovery"]);
@@ -204,6 +207,92 @@ $app->post("/admin/forgot/reset", function (){
 
 });
 
-$app->run();
+$app->get("/admin/categories", function(){
+     User::verifyLogin();
+     $categories = Category::ListAll();
+     $page = new PageAdmin();
 
- 
+     $page->setTpl("categories", ["categories"=>$categories]);
+});
+
+$app->get("/admin/categories/create", function(){
+  User::verifyLogin();
+  $page = new PageAdmin();
+  $page->setTpl("categories-create");
+});
+
+$app->post("/admin/categories/create", function(){
+  User::verifyLogin();
+  $category = new Category();
+  $category->setData($_POST);
+  $category->save();
+  header("Location: /admin/categories");
+  exit;
+});
+
+$app->get("/admin/categories/:idcategory/delete", function($idcategory){
+  User::verifyLogin();
+  $category = new Category();
+  $category->get((int)$idcategory);
+  $category->delete();
+  header("Location: /admin/categories");
+  exit;
+
+});
+
+$app->get("/admin/categories/:idcategory", function($idcategory){
+  User::verifyLogin();
+  $category = new Category();
+  $category->get((int)$idcategory);
+  $page = new PageAdmin();
+  $page->setTpl("categories-update", ['category'=>$category->getValues()]);
+
+   });
+$app->post("/admin/categories/:idcategory", function($idcategory){
+  User::verifyLogin();
+  $category = new Category();
+  $category->get((int)$idcategory);
+  $category->setData($_POST);
+  $category->save();
+  header("Location: /admin/categories");
+  exit;
+});
+
+$app->get("/categories/:idcategory", function($idcategory){
+   $category = new Category();
+   $category->get((int)$idcategory);
+   $page = new Page();
+   $page->setTpl("category", [
+      'category'=>$category->getValues(),
+      'produtcts'=>[]
+   ]);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$app->run();
