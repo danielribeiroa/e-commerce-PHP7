@@ -17,8 +17,9 @@ $app->get('/', function()
  {
     $products = Product::listAll();
     $page = new Page();   
-    $page->setTpl("index", 
-    ['products'=>Product::checkList($products)]);
+    $page->setTpl("index", [
+      'products'=>Product::checkList($products)
+   ]);
 });
 
 $app->get('/admin', function()
@@ -261,11 +262,13 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 $app->get("/categories/:idcategory", function($idcategory){
    $category = new Category();
+
    $category->get((int)$idcategory);
+
    $page = new Page();
-   $page->setTpl("category", [
+   $page->setTpl("category",[
       'category'=>$category->getValues(),
-      'produtcts'=>[]
+      'products'=>$category->getProducts()
    ]);
 });
 
@@ -322,7 +325,39 @@ $app->get("/admin/products/:idproduct/delete", function($idproduct){
 });
 
 
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+   User::verifyLogin();
+   $categories = new Category();
+   $categories->get((int)$idcategory);
+   $page = new PageAdmin();
 
+   $page->setTpl("categories-products", [
+      'category'=>$categories->getValues(),
+      'productsRelated'=>$categories->getProducts(),
+      'productsNotRelated'=>$categories->getProducts(false)
+      ]);
+
+});
+$app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
+   User::verifyLogin();
+   $categories = new Category();
+   $categories->get((int)$idcategory);
+   $product = new Product();
+   $product->get((int)$idproduct);
+   $categories->addProduct($product);
+   header("Location: /admin/categories/".$idcategory."/products");
+   exit;
+});
+$app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
+   User::verifyLogin();
+   $categories = new Category();
+   $categories->get((int)$idcategory);
+   $product = new Product();
+   $product->get((int)$idproduct);
+   $categories->removeProduct($product);
+   header("Location: /admin/categories/".$idcategory."/products");
+   exit;
+});
 
 
 
