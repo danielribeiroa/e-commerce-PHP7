@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require_once("vendor/autoload.php");
 
@@ -249,7 +250,8 @@ $app->get("/admin/categories/:idcategory", function($idcategory){
   $page = new PageAdmin();
   $page->setTpl("categories-update", ['category'=>$category->getValues()]);
 
-   });
+});
+
 $app->post("/admin/categories/:idcategory", function($idcategory){
   User::verifyLogin();
   $category = new Category();
@@ -261,15 +263,22 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 });
 
 $app->get("/categories/:idcategory", function($idcategory){
-   $category = new Category();
+  $page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 
-   $category->get((int)$idcategory);
+  $category = new Category();
 
-   $page = new Page();
-   $page->setTpl("category",[
-      'category'=>$category->getValues(),
-      'products'=>$category->getProducts()
-   ]);
+  $category->get((int)$idcategory);
+
+  $pagination = $category->getProductsPage($page);
+
+  $pages = [];
+
+  for ($i=1; $i <= $pagination['pages']; $i++) { 
+  array_push($pages, [
+  'link'=>'/categories/'.$category->getidcategory().'?page='.$i,
+  'page'=>$i
+    ]);
+  }
 });
 
 $app->get("/admin/products", function (){
@@ -324,7 +333,6 @@ $app->get("/admin/products/:idproduct/delete", function($idproduct){
    exit;
 });
 
-
 $app->get("/admin/categories/:idcategory/products", function($idcategory){
    User::verifyLogin();
    $categories = new Category();
@@ -338,6 +346,7 @@ $app->get("/admin/categories/:idcategory/products", function($idcategory){
       ]);
 
 });
+
 $app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
    User::verifyLogin();
    $categories = new Category();
@@ -348,6 +357,7 @@ $app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idc
    header("Location: /admin/categories/".$idcategory."/products");
    exit;
 });
+
 $app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
    User::verifyLogin();
    $categories = new Category();
@@ -358,25 +368,6 @@ $app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($
    header("Location: /admin/categories/".$idcategory."/products");
    exit;
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -11,7 +11,7 @@ class Product extends Model{
     public static function listAll()
     {
         $sql = new Sql;
-        return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
+        return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");                   
     }
     public static function checkList($list)
     {
@@ -23,10 +23,11 @@ class Product extends Model{
         }
         return $list;
     }
+
     public function save()
     {
-      $sql = new Sql();
-      $results = $sql->select("CALL db_ecommerce.sp_products_save(
+        $sql = new Sql();
+        $results = $sql->select("CALL db_ecommerce.sp_products_save(
                                                                 :idproduct, 
                                                                 :desproduct,
                                                                 :vlprice,
@@ -47,7 +48,7 @@ class Product extends Model{
                                                                 ':desurl'=>$this->getdesurl()
                                                                 
                                                                 ));
-      $this->setData($results[0]);
+        $this->setData($results[0]);
     }
     public function get($idproduct)
     {
