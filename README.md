@@ -1,1 +1,1 @@
-# Template usado no projeto Almsaeed Studio
+Template usado no projeto Almsaeed Studio
