@@ -1,3 +1,1 @@
-# Ecommerce PHP 7
-
-##finished
+# Template usado no projeto Almsaeed Studio
